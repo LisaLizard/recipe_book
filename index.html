@@ -1,0 +1,231 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Веган Рецепты — Интерактивная Книга</title>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&family=Jost:wght@400;600;700&display=swap" rel="stylesheet">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=La+Belle+Aurore&display=swap');
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Jost', sans-serif;
+            background: linear-gradient(135deg, #f0e6e8 0%, #e8dfe0 100%);
+            color: #333;
+            line-height: 1.6;
+        }
+        
+        header {
+            background: rgba(255, 251, 248, 0.95);
+            backdrop-filter: blur(10px);
+            border-bottom: 2px solid rgba(200, 180, 200, 0.3);
+            padding: 30px 40px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+        }
+        
+        header h1 {
+            font-family: 'Playfair Display', serif;
+            font-size: 2.5em;
+            color: #7a8b7a;
+            margin-bottom: 8px;
+            letter-spacing: 2px;
+        }
+        
+        header p {
+            font-family: 'Playfair Display', serif;
+            font-size: 1.1em;
+            color: #9ba89b;
+            font-style: italic;
+        }
+        
+        main {
+            max-width: 1200px;
+            margin: 60px auto;
+            padding: 0 20px;
+        }
+        
+        .hero {
+            text-align: center;
+            margin-bottom: 80px;
+        }
+        
+        .hero h2 {
+            font-family: 'Playfair Display', serif;
+            font-size: 2em;
+            color: #7a8b7a;
+            margin-bottom: 20px;
+        }
+        
+        .hero p {
+            font-size: 1.1em;
+            color: #666;
+            margin-bottom: 40px;
+            max-width: 600px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+        
+        .cta-buttons {
+            display: flex;
+            gap: 20px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+        
+        .btn {
+            display: inline-block;
+            padding: 15px 40px;
+            font-size: 1.05em;
+            font-weight: 600;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            text-decoration: none;
+            transition: all 0.3s ease;
+            font-family: 'Jost', sans-serif;
+        }
+        
+        .btn-primary {
+            background: #8b9b8b;
+            color: white;
+        }
+        
+        .btn-primary:hover {
+            background: #7a8b7a;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(123, 139, 123, 0.3);
+        }
+        
+        .btn-secondary {
+            background: transparent;
+            color: #8b9b8b;
+            border: 2px solid #8b9b8b;
+        }
+        
+        .btn-secondary:hover {
+            background: #8b9b8b;
+            color: white;
+        }
+        
+        .features {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 30px;
+            margin-top: 60px;
+        }
+        
+        .feature-card {
+            background: white;
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+            text-align: center;
+        }
+        
+        .feature-card h3 {
+            font-family: 'Playfair Display', serif;
+            font-size: 1.4em;
+            color: #7a8b7a;
+            margin-bottom: 12px;
+        }
+        
+        .feature-icon {
+            font-size: 2.5em;
+            margin-bottom: 15px;
+        }
+        
+        footer {
+            background: rgba(255, 251, 248, 0.95);
+            border-top: 2px solid rgba(200, 180, 200, 0.3);
+            padding: 30px 40px;
+            text-align: center;
+            color: #9ba89b;
+            margin-top: 100px;
+        }
+        
+        @media (max-width: 768px) {
+            header h1 {
+                font-size: 1.8em;
+            }
+            
+            .hero h2 {
+                font-size: 1.5em;
+            }
+            
+            .cta-buttons {
+                flex-direction: column;
+            }
+            
+            .btn {
+                width: 100%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>🌿 Веган Рецепты</h1>
+        <p>Интерактивная книга с любимыми рецептами</p>
+    </header>
+    
+    <main>
+        <section class="hero">
+            <h2>Добро пожаловать в мир растительной пищи!</h2>
+            <p>Здесь ты найдёшь уютную коллекцию веган-рецептов, красиво оформленную как настоящая кулинарная книга. Листай страницы, добавляй свои рецепты и делись с друзьями.</p>
+            
+            <div class="cta-buttons">
+                <a href="book.html" class="btn btn-primary">📖 Просмотреть книгу</a>
+                <a href="admin.html" class="btn btn-secondary">✏️ Админ-панель</a>
+            </div>
+        </section>
+        
+        <section class="features">
+            <div class="feature-card">
+                <div class="feature-icon">📚</div>
+                <h3>Красивая книга</h3>
+                <p>Рецепты оформлены как настоящая кулинарная книга с клеточкой в фоне и цветными страницами по категориям.</p>
+            </div>
+            
+            <div class="feature-card">
+                <div class="feature-icon">✍️</div>
+                <h3>Добавляй рецепты</h3>
+                <p>Просто введи название, ингредиенты и шаги — рецепт сразу появится в книге с красивым оформлением.</p>
+            </div>
+            
+            <div class="feature-card">
+                <div class="feature-icon">💚</div>
+                <h3>Люимые рецепты</h3>
+                <p>Отметь рецепты сердечком, чтобы быстро найти свои любимые.</p>
+            </div>
+            
+            <div class="feature-card">
+                <div class="feature-icon">🎨</div>
+                <h3>По категориям</h3>
+                <p>Завтраки, основное, десерты, салаты, напитки — каждая категория имеет свой цвет.</p>
+            </div>
+            
+            <div class="feature-card">
+                <div class="feature-icon">📥</div>
+                <h3>Экспорт</h3>
+                <p>Скачай всю книгу как EPUB для Apple Books или PDF для печати.</p>
+            </div>
+            
+            <div class="feature-card">
+                <div class="feature-icon">🔐</div>
+                <h3>Защищено</h3>
+                <p>Только ты можешь добавлять и редактировать рецепты — админ-панель защищена паролем.</p>
+            </div>
+        </section>
+    </main>
+    
+    <footer>
+        <p>🌿 Веган рецепты • Интерактивная книга • 2026</p>
+    </footer>
+</body>
+</html>
