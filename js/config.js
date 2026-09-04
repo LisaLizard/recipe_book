@@ -7,8 +7,7 @@
 // Settings → API → Project URL и anon public
 export const SUPABASE_CONFIG = {
   URL:'https://fzpmgiktmogsvalxdjrb.supabase.co',
-  ANON_KEY: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZ6cG1naWt0bW9nc3ZhbHhkanJiIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODg0MDE2NzYsImV4cCI6MjEwMzk3NzY3Nn0.DOo7Cfu0aVWtQjh_xRCFUDSqNqhv4Jtb9h-KG1YY8yE'
-};
+  ANON_KEY:'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZ6cG1naWt0bW9nc3ZhbHhkanJiIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODg0MDE2NzYsImV4cCI6MjEwMzk3NzY3Nn0.DOo7Cfu0aVWtQjh_xRCFUDSqNqhv4Jtb9h-KG1YY8yE'};
 
 // Admin password
 export const ADMIN_PASSWORD = 'addnew';
