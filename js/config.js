@@ -6,7 +6,7 @@
 // TODO: Замени на свои значения из Supabase Dashboard
 // Settings → API → Project URL и anon public
 export const SUPABASE_CONFIG = {
-  URL:'sb_publishable_vpm_o41fceFpOAJ-0kvVAg_9Bxz3ImU',
+  URL:'https://fzpmgiktmogsvalxdjrb.supabase.co',
   ANON_KEY: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZ6cG1naWt0bW9nc3ZhbHhkanJiIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODg0MDE2NzYsImV4cCI6MjEwMzk3NzY3Nn0.DOo7Cfu0aVWtQjh_xRCFUDSqNqhv4Jtb9h-KG1YY8yE'
 };
 
