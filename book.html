@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Книга рецептов</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Courier+Prime:wght@400;700&family=Jost:wght@300;400;500;600;700&family=La+Belle+Aurore&family=Playfair+Display:wght@600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/main.css">
+<link rel="stylesheet" href="css/recipe-card.css">
+</head>
+<body>
+  <header class="site-header">
+    <h1>🌿 Книга рецептов</h1>
+    <nav class="site-nav">
+      <a href="index.html">Главная</a>
+      <a href="admin.html">Админка</a>
+    </nav>
+  </header>
+
+  <main class="book-layout">
+    <p id="book-status"></p>
+    <div class="category-filters" id="category-filters"></div>
+
+    <aside class="toc-box">
+      <h2>Содержание</h2>
+      <ul id="toc"></ul>
+    </aside>
+
+    <section id="book-content"></section>
+  </main>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="js/config.js"></script>
+  <script src="js/db.js"></script>
+  <script src="js/recipe-card.js"></script>
+  <script src="js/book.js"></script>
+</body>
+</html>
