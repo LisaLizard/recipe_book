@@ -11,7 +11,7 @@
    ========================================================================== */
 
 const SUPABASE_URL = 'https://fzpmgiktmogsvalxdjrb.supabase.co';
-const SUPABASE_ANON_KEY = 'ВСТАВЬТЕ_СЮДА_ВАШ_ANON_KEY';
+const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZ6cG1naWt0bW9nc3ZhbHhkanJiIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODg0MDE2NzYsImV4cCI6MjEwMzk3NzY3Nn0.DOo7Cfu0aVWtQjh_xRCFUDSqNqhv4Jtb9h-KG1YY8yE';
 
 // supabase-js подключается через CDN (см. <script> в HTML-страницах)
 // и создаёт глобальный объект window.supabase.
