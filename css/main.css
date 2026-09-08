@@ -258,7 +258,7 @@ a:hover { color: var(--accent-dark); }
 
 .home-footer-grid {
   display: grid;
-  grid-template-columns: 1fr 2fr;
+  grid-template-columns: 1fr 1fr;
   gap: 24px;
   align-items: center;
 }
@@ -287,13 +287,21 @@ a:hover { color: var(--accent-dark); }
 .inspiration-list a:hover { text-decoration: underline; }
 .inspiration-placeholder { color: rgba(44,42,36,0.4); font-style: italic; }
 
-.pinterest-board {
+.inspiration-photo {
   width: 100%;
-  max-width: 700px;
+  max-width: 320px;
+  aspect-ratio: 1 / 1;
   margin: 0 auto;
-  display: flex;
-  align-items: center;
-  justify-content: center;
+  border: 1px solid var(--ink);
+  background: var(--paper);
+  overflow: hidden;
+}
+
+.inspiration-photo img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
 }
 
 /* -------------------------------- /admin -------------------------------- */
