@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Админка — книга рецептов</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Courier+Prime:wght@400;700&family=Jost:wght@300;400;500;600;700&family=La+Belle+Aurore&family=Playfair+Display:wght@600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/main.css">
+<link rel="stylesheet" href="css/recipe-card.css">
+</head>
+<body>
+  <header class="site-header">
+    <h1>🌿 Книга рецептов</h1>
+    <nav class="site-nav">
+      <a href="index.html">Главная</a>
+      <a href="book.html">Книга</a>
+    </nav>
+  </header>
+
+  <!-- экран входа -->
+  <section class="admin-gate" id="admin-gate">
+    <h2>Вход в админку</h2>
+    <form id="admin-gate-form">
+      <input type="password" id="admin-gate-password" placeholder="Пароль" autofocus>
+      <p class="gate-error" id="admin-gate-error"></p>
+      <button type="submit" class="btn">Войти</button>
+    </form>
+  </section>
+
+  <!-- админ-панель -->
+  <main class="admin-layout" id="admin-app" hidden>
+
+    <div>
+      <button type="button" class="btn" id="admin-new-btn" style="width:100%;margin-bottom:10px">+ Новый рецепт</button>
+      <ul class="admin-list" id="admin-recipe-list"></ul>
+    </div>
+
+    <form class="admin-form" id="recipe-form">
+      <h2 id="form-title">Новый рецепт</h2>
+
+      <div class="field">
+        <label for="field-name">Название</label>
+        <input type="text" id="field-name" name="name" required>
+      </div>
+
+      <div class="field-row">
+        <div class="field">
+          <label for="field-category">Категория</label>
+          <select id="field-category" name="category">
+            <option value="завтрак">🥞 завтрак</option>
+            <option value="основное">🥡 основное</option>
+            <option value="супы">🍜 супы</option>
+            <option value="десерты">🧁 десерты</option>
+            <option value="салаты">🥗 салаты</option>
+            <option value="напитки">☕️ напитки</option>
+            <option value="другое">🌿 другое</option>
+          </select>
+        </div>
+        <div class="field">
+          <label for="field-time">Время (мин)</label>
+          <input type="number" id="field-time" name="time_minutes" min="0">
+        </div>
+        <div class="field">
+          <label for="field-portions">Порции</label>
+          <input type="number" id="field-portions" name="portions" min="1">
+        </div>
+      </div>
+
+      <div class="field-row">
+        <div class="field">
+          <label for="field-spice">Острота (0–3)</label>
+          <input type="number" id="field-spice" name="spiciness" min="0" max="3" value="0">
+        </div>
+        <div class="field">
+          <label for="field-difficulty">Сложность</label>
+          <input type="text" id="field-difficulty" name="difficulty" placeholder="★★☆">
+        </div>
+        <div class="field field-checkbox">
+          <label for="field-favorite">💚 Любимый</label>
+          <input type="checkbox" id="field-favorite" name="is_favorite">
+        </div>
+      </div>
+
+      <div class="field">
+        <label>Ингредиенты</label>
+        <div id="ingredients-list"></div>
+        <button type="button" class="add-row-btn" id="add-ingredient-btn">+ ингредиент</button>
+      </div>
+
+      <div class="field">
+        <label>Шаги приготовления</label>
+        <div id="steps-list"></div>
+        <button type="button" class="add-row-btn" id="add-step-btn">+ шаг</button>
+      </div>
+
+      <div class="field">
+        <label for="field-notes">Заметки (стикер)</label>
+        <textarea id="field-notes" name="additional_info" rows="3" placeholder="в следующий раз меньше сахара"></textarea>
+      </div>
+
+      <div class="field">
+        <label for="field-source">Источник (ссылка)</label>
+        <input type="url" id="field-source" name="source_url" placeholder="https://...">
+      </div>
+
+      <div class="field">
+        <label for="field-photo-url">Фото — ссылка</label>
+        <input type="url" id="field-photo-url" name="photo_url" placeholder="https://...">
+        <p class="field-hint">Загрузите фото в любое облако (Google Drive, imgur, Яндекс.Диск и т.п.), возьмите публичную прямую ссылку на изображение и вставьте сюда.</p>
+        <img id="photo-preview" hidden>
+      </div>
+
+      <div class="form-actions">
+        <button type="submit" class="btn">Сохранить</button>
+        <button type="button" class="btn btn--danger" id="admin-delete-btn" hidden>Удалить</button>
+        <span id="admin-status"></span>
+      </div>
+    </form>
+
+    <div class="preview-panel">
+      <h2>Превью</h2>
+      <div class="preview-panel-scroll">
+        <div id="card-preview"></div>
+      </div>
+    </div>
+
+  </main>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="js/config.js"></script>
+  <script src="js/db.js"></script>
+  <script src="js/recipe-card.js"></script>
+  <script src="js/admin.js"></script>
+</body>
+</html>
