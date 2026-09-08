@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Админка — книга рецептов</title>
+<title>Админка — книга рецептов ящерицы</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Courier+Prime:wght@400;700&family=Jost:wght@300;400;500;600;700&family=La+Belle+Aurore&family=Playfair+Display:wght@600;700&display=swap" rel="stylesheet">
@@ -12,7 +12,7 @@
 </head>
 <body>
   <header class="site-header">
-    <h1>🌿 Книга рецептов</h1>
+    <h1>🦎 Книга рецептов ящерицы</h1>
     <nav class="site-nav">
       <a href="index.html">Главная</a>
       <a href="book.html">Книга</a>
@@ -40,13 +40,19 @@
     <form class="admin-form" id="recipe-form">
       <h2 id="form-title">Новый рецепт</h2>
 
-      <div class="field">
-        <label for="field-name">Название</label>
-        <input type="text" id="field-name" name="name" required>
+      <div class="field-row">
+        <div class="field" style="flex:3;">
+          <label for="field-name">Название</label>
+          <input type="text" id="field-name" name="name" required>
+        </div>
+        <div class="field field-checkbox" style="flex:0 0 auto; align-self:flex-end; padding-bottom:8px;">
+          <label for="field-favorite">💚 Любимый</label>
+          <input type="checkbox" id="field-favorite" name="is_favorite">
+        </div>
       </div>
 
       <div class="field-row">
-        <div class="field">
+        <div class="field" style="flex:2;">
           <label for="field-category">Категория</label>
           <select id="field-category" name="category">
             <option value="завтрак">🥞 завтрак</option>
@@ -66,16 +72,9 @@
           <label for="field-portions">Порции</label>
           <input type="number" id="field-portions" name="portions" min="1">
         </div>
-      </div>
-
-      <div class="field-row">
         <div class="field">
           <label for="field-spice">Острота (0–3)</label>
           <input type="number" id="field-spice" name="spiciness" min="0" max="3" value="0">
-        </div>
-        <div class="field field-checkbox">
-          <label for="field-favorite">💚 Любимый</label>
-          <input type="checkbox" id="field-favorite" name="is_favorite">
         </div>
       </div>
 
@@ -93,19 +92,20 @@
 
       <div class="field">
         <label for="field-notes">Заметки (стикер)</label>
-        <textarea id="field-notes" name="additional_info" rows="3" placeholder="в следующий раз меньше сахара"></textarea>
+        <textarea id="field-notes" name="additional_info" rows="2" placeholder="в следующий раз меньше сахара"></textarea>
       </div>
 
-      <div class="field">
-        <label for="field-source">Источник (ссылка)</label>
-        <input type="url" id="field-source" name="source_url" placeholder="https://...">
-      </div>
-
-      <div class="field">
-        <label for="field-photo-url">Фото — ссылка</label>
-        <input type="url" id="field-photo-url" name="photo_url" placeholder="https://...">
-        <p class="field-hint">Загрузите фото в любое облако (Google Drive, imgur, Яндекс.Диск и т.п.), возьмите публичную прямую ссылку на изображение и вставьте сюда.</p>
-        <img id="photo-preview" hidden>
+      <div class="field-row">
+        <div class="field">
+          <label for="field-source">Источник (ссылка)</label>
+          <input type="url" id="field-source" name="source_url" placeholder="https://...">
+        </div>
+        <div class="field">
+          <label for="field-photo-url">Фото — ссылка</label>
+          <input type="url" id="field-photo-url" name="photo_url" placeholder="https://...">
+          <p class="field-hint">Ссылка на фото из любого облака (Google Drive, Pinterest, imgur и т.п.)</p>
+          <img id="photo-preview" hidden>
+        </div>
       </div>
 
       <div class="form-actions">
