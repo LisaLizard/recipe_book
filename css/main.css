@@ -338,7 +338,7 @@ a:hover { color: var(--accent-dark); }
 
 .admin-layout {
   display: grid;
-  grid-template-columns: 240px 1fr 360px;
+  grid-template-columns: 240px 1fr 480px;
   gap: 20px;
   max-width: 1400px;
   margin: 20px auto;
@@ -375,10 +375,10 @@ a:hover { color: var(--accent-dark); }
 .admin-form {
   background: var(--paper);
   border: 1px solid var(--ink);
-  padding: 20px;
+  padding: 18px 20px;
   display: flex;
   flex-direction: column;
-  gap: 14px;
+  gap: 10px;
 }
 
 .admin-form h2 {
@@ -459,8 +459,9 @@ a:hover { color: var(--accent-dark); }
   background: var(--accent-dark);
   color: var(--paper);
   padding: 24px;
+  margin-top: -20px;
   margin-right: calc(-50vw + 50%);
-  min-height: 100%;
+  min-height: calc(100% + 20px);
 }
 
 .preview-panel h2 {
@@ -471,6 +472,6 @@ a:hover { color: var(--accent-dark); }
 
 .preview-panel-scroll {
   transform-origin: top left;
-  transform: scale(0.38);
+  transform: scale(0.55);
   width: 794px;
 }
