@@ -383,6 +383,8 @@ a:hover { color: var(--accent-dark); }
 
 .admin-form h2 {
   font-family: 'Playfair Display', serif;
+  font-size: 32px;
+  font-weight: 700;
   margin: 0;
 }
 
@@ -461,17 +463,21 @@ a:hover { color: var(--accent-dark); }
   padding: 24px;
   margin-top: -20px;
   margin-right: calc(-50vw + 50%);
-  min-height: calc(100% + 20px);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
 }
 
 .preview-panel h2 {
   font-family: 'Playfair Display', serif;
-  font-size: 16px;
+  font-size: 32px;
+  font-weight: 700;
   color: var(--paper);
+  margin: 0 0 16px;
 }
 
 .preview-panel-scroll {
-  transform-origin: top left;
+  transform-origin: top center;
   transform: scale(0.55);
   width: 794px;
 }
