@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Книга рецептов ящерицы</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Jost:wght@300;400;500;600;700&family=Playfair+Display:wght@600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/main.css">
+</head>
+<body>
+  <header class="site-header">
+    <h1>🦎 Книга рецептов ящерицы</h1>
+    <nav class="site-nav">
+      <a href="book.html">Книга</a>
+      <a href="admin.html" class="admin-link">Админка</a>
+    </nav>
+  </header>
+
+  <main class="home">
+    <section class="home-hero">
+      <h1>Книга рецептов ящерицы</h1>
+      <p>Все рецепты собраны в одном месте — с фото, ингредиентами и заметками на полях.</p>
+    </section>
+
+    <section class="home-links home-links--single">
+      <a class="home-card" href="book.html">
+        <span class="home-card__emoji">📖</span>
+        <span class="home-card__title">Книга рецептов</span>
+        <span class="home-card__desc">Смотреть рецепты, фильтровать по категориям</span>
+      </a>
+    </section>
+
+    <section class="home-stats">
+      <div class="stat-box">
+        <span class="stat-value" id="stat-count">—</span>
+        <span class="stat-label">рецептов в книге</span>
+      </div>
+      <div class="stat-box">
+        <span class="stat-label">последний добавлен</span>
+        <a class="stat-link" id="stat-last" href="book.html">—</a>
+      </div>
+      <div class="stat-box">
+        <button type="button" class="btn" id="random-btn">🎲 Случайный рецепт</button>
+      </div>
+    </section>
+  </main>
+
+  <footer class="home-footer">
+    <h2>✨ inspiration ✨</h2>
+    <ul class="inspiration-list" id="inspiration-list">
+      <li><a href="https://www.pickuplimes.com/" target="_blank" rel="noopener">Pick Up Limes</a></li>
+      <li><a href="https://fit-green-mind.com/" target="_blank" rel="noopener">FitGreenMind</a></li>
+      <li><a href="https://www.youtube.com/@MerleONeal" target="_blank" rel="noopener">Merle O'Neal</a></li>
+      <li><a href="https://www.youtube.com/@RainbowPlantLife" target="_blank" rel="noopener">Rainbow Plant Life</a></li>
+      <li><a href="https://www.youtube.com/@nico.recipes/featured" target="_blank" rel="noopener">Nico's Recipes</a></li>
+    </ul>
+
+    <div class="pinterest-board">
+      <a data-pin-do="embedBoard" data-pin-board-width="900" data-pin-scale-height="220" data-pin-scale-width="80"
+         href="https://pin.it/9bNNWNNc0"></a>
+    </div>
+  </footer>
+
+  <script async defer src="//assets.pinterest.com/js/pinit.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="js/config.js"></script>
+  <script src="js/db.js"></script>
+  <script src="js/index.js"></script>
+  <script src="js/admin-gate-link.js"></script>
+</body>
+</html>
