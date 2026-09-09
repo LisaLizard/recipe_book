@@ -239,48 +239,64 @@ window.addEventListener('resize', () => {
 /* -------------------------------- скачивание PDF -------------------------------- */
 
 async function handleDownloadPdf() {
-  if (pdfBusy || !pages.length || typeof window.html2pdf !== 'function') return;
+  if (pdfBusy || !pages.length) return;
+
+  if (typeof window.html2canvas !== 'function' || !window.jspdf || !window.jspdf.jsPDF) {
+    window.alert('Библиотека для PDF ещё не загрузилась. Обновите страницу и попробуйте снова.');
+    return;
+  }
+
   pdfBusy = true;
   const originalLabel = els.pdfBtn.textContent;
-  els.pdfBtn.textContent = '…';
   els.pdfBtn.disabled = true;
 
-  // Важно: контейнер для экспорта должен реально лежать на экране (в
-  // положительных координатах 0,0), иначе html2canvas у некоторых версий
-  // обрезает его при клонировании страницы и отдаёт пустой холст.
-  // Поэтому прячем его не сдвигом в минус, а полноэкранной "шторкой" поверх.
+  // Контейнер для рендера должен реально находиться на экране в обычных
+  // (положительных) координатах — иначе html2canvas у части браузеров/версий
+  // обрезает его при захвате и отдаёт пустой холст. Поэтому прячем его не
+  // сдвигом в минус, а полноэкранной "шторкой" поверх (см. .pdf-export-overlay).
   const overlay = document.createElement('div');
   overlay.className = 'pdf-export-overlay';
-  overlay.textContent = 'Собираю PDF, подождите…';
   document.body.appendChild(overlay);
 
-  const root = document.createElement('div');
-  root.className = 'pdf-export-root';
-  pages.forEach((page) => {
-    const node = pageNode(page);
-    node.style.pageBreakAfter = 'always';
-    node.style.breakAfter = 'page';
-    root.appendChild(node);
-  });
-  document.body.appendChild(root);
+  const stage = document.createElement('div');
+  stage.className = 'pdf-export-root';
+  document.body.appendChild(stage);
+
+  const { jsPDF } = window.jspdf;
+  const pdf = new jsPDF({ unit: 'mm', format: 'a4', orientation: 'portrait' });
+  const pageWidthMm = pdf.internal.pageSize.getWidth();
+  const pageHeightMm = pdf.internal.pageSize.getHeight();
 
   try {
-    await window.html2pdf()
-      .set({
-        margin: 0,
-        filename: 'kniga-receptov-yashcheritsy.pdf',
-        image: { type: 'jpeg', quality: 0.95 },
-        html2canvas: { scale: 2, useCORS: true },
-        jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' },
-        pagebreak: { mode: ['css', 'legacy'] },
-      })
-      .from(root)
-      .save();
+    for (let i = 0; i < pages.length; i += 1) {
+      overlay.textContent = `Собираю PDF… страница ${i + 1} из ${pages.length}`;
+
+      stage.innerHTML = '';
+      const node = pageNode(pages[i]);
+      stage.appendChild(node);
+
+      // дать браузеру реально отрисовать страницу (важно для внешних фото)
+      // eslint-disable-next-line no-await-in-loop
+      await new Promise((resolve) => requestAnimationFrame(() => requestAnimationFrame(resolve)));
+
+      // eslint-disable-next-line no-await-in-loop
+      const canvas = await window.html2canvas(node, {
+        scale: 2,
+        useCORS: true,
+        backgroundColor: '#ffffff',
+      });
+      const imgData = canvas.toDataURL('image/jpeg', 0.95);
+
+      if (i > 0) pdf.addPage();
+      pdf.addImage(imgData, 'JPEG', 0, 0, pageWidthMm, pageHeightMm);
+    }
+
+    pdf.save('kniga-receptov-yashcheritsy.pdf');
   } catch (err) {
     console.error(err);
     window.alert('Не удалось собрать PDF. Попробуйте ещё раз.');
   } finally {
-    document.body.removeChild(root);
+    document.body.removeChild(stage);
     document.body.removeChild(overlay);
     pdfBusy = false;
     els.pdfBtn.textContent = originalLabel;
