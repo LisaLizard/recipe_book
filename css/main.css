@@ -425,14 +425,14 @@ body.page-book .book-layout {
 }
 
 .stat-link {
-  font-size: 15px;
+  font-size: 20px;
   font-weight: 600;
   text-decoration: none;
 }
 
 .stat-box .btn {
-  font-size: 14px;
-  padding: 8px 14px;
+  font-size: 17px;
+  padding: 10px 18px;
 }
 
 @media (max-width: 640px) {
@@ -659,10 +659,11 @@ body.page-book .book-layout {
 
 .preview-panel h2 {
   font-family: 'Playfair Display', serif;
-  font-size: 32px;
+  font-size: 18px;
   font-weight: 700;
   color: var(--paper);
-  margin: 0 0 16px;
+  align-self: flex-start;
+  margin: 0 0 12px;
 }
 
 .preview-panel-scroll {
