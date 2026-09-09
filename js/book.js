@@ -351,6 +351,15 @@ async function init() {
     setStatus(allRecipes.length ? '' : 'Рецептов пока нет — добавьте их в /admin.');
     pages = buildPages();
     currentIndex = 0;
+
+    // открытие книги сразу на нужном рецепте по ссылке book.html?recipe=ID
+    // (используется с главной страницы: "последний добавлен" / "случайный рецепт")
+    const wantedId = new URLSearchParams(window.location.search).get('recipe');
+    if (wantedId) {
+      const idx = findRecipeIndex(wantedId);
+      if (idx >= 0) currentIndex = idx;
+    }
+
     renderSidebar();
     renderCurrentPage();
   } catch (err) {
