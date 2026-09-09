@@ -20,6 +20,19 @@ function epubPad(n, width) {
   return String(n).padStart(width, '0');
 }
 
+/**
+ * EPUB требует строгий XML (XHTML): все "одиночные" теги (img, br и т.п.)
+ * должны быть самозакрывающимися. recipeCardHTML()/renderCoverHTML() и
+ * т.д. генерируют обычный HTML5 (это нормально для сайта, но не для EPUB),
+ * поэтому здесь мы приводим их вывод к XML-корректному виду перед упаковкой.
+ */
+function toXhtmlSafe(html) {
+  return html
+    .replace(/<br\s*>/gi, '<br/>')
+    .replace(/<img((?:(?!\/>)[^>])*)>/gi, '<img$1/>')
+    .replace(/<hr\s*>/gi, '<hr/>');
+}
+
 /** Скачивает фото через тот же CORS-прокси, что и PDF-экспорт, возвращает байты. */
 async function epubFetchImage(url) {
   const proxied = corsProxied(url);
@@ -134,7 +147,7 @@ async function generateEpub() {
         bodyHtml = recipeCardHTML(recipeForExport);
       }
 
-      oebps.folder('pages').file(`page-${num}.xhtml`, epubPageXhtml(bodyHtml, title));
+      oebps.folder('pages').file(`page-${num}.xhtml`, epubPageXhtml(toXhtmlSafe(bodyHtml), title));
       manifestItems.push(`<item id="${pageId}" href="${pageHref}" media-type="application/xhtml+xml"/>`);
       spineItems.push(`<itemref idref="${pageId}"/>`);
 
