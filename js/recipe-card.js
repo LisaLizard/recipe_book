@@ -1,401 +1,143 @@
 /* ==========================================================================
-   Recipe Card — карточка рецепта
-   Портировано из экспортированного шаблона в статичные HTML/CSS/JS,
-   чтобы карточку можно было рендерить из данных Supabase.
-
-   Подключить шрифты в <head> страницы (book.html), например:
-   <link rel="preconnect" href="https://fonts.googleapis.com">
-   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-   <link href="https://fonts.googleapis.com/css2?family=Courier+Prime:wght@400;700&family=Jost:wght@300;400;500;600;700&family=La+Belle+Aurore&family=Playfair+Display:wght@600;700&display=swap" rel="stylesheet">
+   recipe-card.js
+   Рендерит карточку рецепта (см. css/recipe-card.css) из объекта recipe,
+   как он приходит из таблицы Supabase `recipes`.
+   Обычный скрипт (не модуль) — доступен как window.renderRecipeCard(...).
    ========================================================================== */
 
-.recipe-card {
-  --rc-ink: #23231f;
-  --rc-bg: #FFF8DC;      /* фон листа — задаётся по категории через JS */
-  --rc-table-bg: #FFFCEC; /* фон карточки-таблицы — задаётся по категории */
-  --rc-step-bg: #F7D983;  /* фон блока с шагами — задаётся по категории */
+// Цвета и эмодзи по категориям: [эмодзи, фон листа, фон карточки, фон блока шагов]
+const RECIPE_CATEGORIES = {
+  'завтрак':   ['🥞', '#FBEFC0', '#FFFCEC', '#F7D983'],
+  'завтраки':  ['🥞', '#FBEFC0', '#FFFCEC', '#F7D983'],
+  'основное':  ['🥡', '#BFE4EA', '#F2FAFB', '#8CCBD9'],
+  'супы':      ['🍜', '#F6D6C7', '#FEF5F0', '#EDAE93'],
+  'десерты':   ['🧁', '#FBC9DF', '#FEF3F7', '#F59CC1'],
+  'салаты':    ['🥗', '#CBEFC6', '#F5FCF3', '#9CDE94'],
+  'напитки':   ['☕️', '#EBD7B0', '#FCF8EE', '#DBB983'],
+  'другое':    ['🌿', '#DCD3F0', '#F8F6FD', '#B6A7E0'],
+};
 
-  box-sizing: border-box;
-  position: relative;
-  width: 794px;   /* A4 при 96dpi */
-  height: 1123px;
-  margin: 0 auto;
-  padding: 24px;
-  background: var(--rc-bg);
-  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24'%3E%3Cpath d='M0.5 0V24M0 0.5H24' stroke='%2323231f' stroke-opacity='0.09' stroke-width='1'/%3E%3C/svg%3E");
-  background-size: 24px 24px;
-  font-family: 'Jost', sans-serif;
-  color: var(--rc-ink);
-  overflow: hidden;
+const RECIPE_CARD_DEFAULT_CATEGORY = 'завтрак';
+const RECIPE_CARD_INGREDIENT_ROWS = 12; // фиксированное число строк, чтобы колонка не "прыгала"
+
+function rcEscapeHtml(str) {
+  return String(str ?? '').replace(/[&<>"']/g, (c) => ({
+    '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;',
+  }[c]));
 }
 
-/* Отключить клетчатую подложку, если нужно: <div class="recipe-card recipe-card--no-grid"> */
-.recipe-card--no-grid { background-image: none; }
-
-.recipe-card__table {
-  box-sizing: border-box;
-  height: 100%;
-  border: 1px solid var(--rc-ink);
-  border-top: 5px double var(--rc-ink);
-  background: var(--rc-table-bg);
-  display: grid;
-  grid-template-columns: 268px 1fr;
-  grid-template-rows: 1fr 48px;
+/** Приводит recipe.ingredients к массиву { qty, name }. */
+function rcNormalizeIngredients(ingredients) {
+  if (!Array.isArray(ingredients)) return [];
+  return ingredients.map((item) => {
+    if (item && typeof item === 'object') {
+      return { qty: item.qty ?? item.amount ?? '', name: item.name ?? '' };
+    }
+    const str = String(item);
+    const match = str.match(/^([\d.,/]+\s*[^\s—-]*)\s*[—-]?\s*(.*)$/);
+    return match ? { qty: match[1].trim(), name: match[2].trim() } : { qty: '', name: str };
+  });
 }
 
-/* ---------- левая колонка: ингредиенты + заметки ---------- */
-
-.recipe-card__left {
-  border-right: 1px solid var(--rc-ink);
-  display: flex;
-  flex-direction: column;
-  min-height: 0;
-  position: relative;
+/** Приводит recipe.steps к массиву строк. */
+function rcNormalizeSteps(steps) {
+  if (Array.isArray(steps)) return steps.map(String);
+  if (typeof steps === 'string') return steps.split(/\n+/).filter(Boolean);
+  return [];
 }
 
-.recipe-card__ingredients {
-  flex: 1;
-  min-height: 0;
-  border-bottom: 1px solid var(--rc-ink);
-  display: flex;
-  flex-direction: column;
-  padding: 16px 18px 14px;
-  gap: 10px;
-  overflow: hidden;
+/** Возвращает готовую HTML-строку карточки (пригодится и для экспорта в PDF). */
+function recipeCardHTML(recipe) {
+  const categoryKey = (recipe.category || '').toLowerCase().trim();
+  const [emoji, bg, tableBg, stepBg] = RECIPE_CATEGORIES[categoryKey] || RECIPE_CATEGORIES[RECIPE_CARD_DEFAULT_CATEGORY];
+
+  const ingredients = rcNormalizeIngredients(recipe.ingredients);
+  const steps = rcNormalizeSteps(recipe.steps);
+  const spice = Math.max(0, Math.min(3, Math.round(recipe.spiciness ?? 0)));
+
+  const ingredientRows = Array.from({ length: RECIPE_CARD_INGREDIENT_ROWS }, (_, i) => {
+    const ing = ingredients[i];
+    return `
+      <div class="recipe-card__ingredient-row">
+        <span class="recipe-card__ingredient-qty">${ing ? rcEscapeHtml(ing.qty) : ''}</span>
+        <span class="recipe-card__ingredient-name">${ing ? rcEscapeHtml(ing.name) : ''}</span>
+      </div>`;
+  }).join('');
+
+  const stepsText = steps.map((s, i) => `${i + 1}. ${s}`).join('\n');
+
+  const photoBlock = recipe.photo_url
+    ? `<img src="${rcEscapeHtml(recipe.photo_url)}" alt="${rcEscapeHtml(recipe.name)}">`
+    : `<div class="recipe-card__photo-placeholder">место для фото</div>`;
+
+  const sourceBlock = recipe.source_url
+    ? `<a href="${rcEscapeHtml(recipe.source_url)}" target="_blank" rel="noopener">${rcEscapeHtml(recipe.source_url)}</a>`
+    : '';
+
+  return `
+<div class="recipe-card" style="--rc-bg:${bg};--rc-table-bg:${tableBg};--rc-step-bg:${stepBg}" data-recipe-id="${rcEscapeHtml(recipe.id ?? '')}" data-category="${rcEscapeHtml(categoryKey)}">
+  <div class="recipe-card__table">
+
+    <div class="recipe-card__left">
+      <div class="recipe-card__ingredients">
+        <div class="recipe-card__section-title"><span>ингредиенты</span></div>
+        <div class="recipe-card__ingredients-list">${ingredientRows}</div>
+      </div>
+      <div class="recipe-card__notes-wrap">
+        <div class="recipe-card__notes">
+          <div class="recipe-card__notes-title">notes</div>
+          <div class="recipe-card__notes-text">${rcEscapeHtml(recipe.additional_info)}</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="recipe-card__right">
+      <div class="recipe-card__header">
+        <div class="recipe-card__title">${rcEscapeHtml(recipe.name)}</div>
+        <span class="recipe-card__fav">${recipe.is_favorite ? '💚' : ''}</span>
+      </div>
+
+      <div class="recipe-card__meta">
+        <div class="recipe-card__meta-cell">
+          <span class="recipe-card__meta-emoji">${emoji}</span>
+          <span class="recipe-card__meta-category">${rcEscapeHtml(recipe.category)}</span>
+        </div>
+        <div class="recipe-card__meta-cell">
+          <span class="recipe-card__meta-value">${recipe.time_minutes ? rcEscapeHtml(recipe.time_minutes) + ' мин' : ''}</span>
+          <span class="recipe-card__meta-label">время</span>
+        </div>
+        <div class="recipe-card__meta-cell">
+          <span class="recipe-card__meta-value">${recipe.portions ? rcEscapeHtml(recipe.portions) : ''}</span>
+          <span class="recipe-card__meta-label">порции</span>
+        </div>
+        <div class="recipe-card__meta-cell">
+          <span class="recipe-card__meta-spice">${'🔥'.repeat(spice)}</span>
+          <span class="recipe-card__meta-label">острота</span>
+        </div>
+      </div>
+
+      <div class="recipe-card__body">
+        <div class="recipe-card__photo">${photoBlock}</div>
+        <div class="recipe-card__steps">
+          <div class="recipe-card__steps-title"><span>способ приготовления</span></div>
+          <div class="recipe-card__steps-text">${rcEscapeHtml(stepsText)}</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="recipe-card__footer-source">
+      <span class="recipe-card__footer-source-label">источник</span>
+      ${sourceBlock}
+    </div>
+    <div class="recipe-card__footer-bon"><span>приятного аппетита!</span></div>
+
+  </div>
+</div>`;
 }
 
-.recipe-card__section-title {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-}
-
-.recipe-card__section-title::before,
-.recipe-card__section-title::after {
-  content: '';
-  flex: 1;
-  height: 1px;
-  background: var(--rc-ink);
-  opacity: 0.5;
-}
-
-.recipe-card__section-title span {
-  font-family: 'Jost', sans-serif;
-  font-weight: 700;
-  font-size: 17px;
-  letter-spacing: 0.14em;
-  text-transform: uppercase;
-  white-space: nowrap;
-}
-
-.recipe-card__ingredients-list {
-  flex: 1;
-  min-height: 0;
-  display: flex;
-  flex-direction: column;
-  justify-content: flex-start;
-}
-
-.recipe-card__ingredient-row {
-  flex: none;
-  height: 25px;
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  font-family: 'Courier Prime', 'Courier New', monospace;
-  font-size: 14px;
-  color: var(--rc-ink);
-}
-
-.recipe-card__ingredient-qty {
-  width: 60px;
-  flex: none;
-  text-align: right;
-  white-space: nowrap;
-}
-
-.recipe-card__ingredient-name {
-  flex: 1;
-  min-width: 0;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-}
-
-.recipe-card__notes-wrap {
-  height: 330px;
-  flex: none;
-  position: relative;
-  padding: 18px 18px 0;
-}
-
-.recipe-card__notes {
-  position: absolute;
-  left: 5px;
-  top: 43px;
-  width: 270px;
-  height: 270px;
-  transform: rotate(-5deg);
-  background: #f4f7cf;
-  box-shadow: 5px 6px 10px rgba(35,35,31,0.22);
-  border: 1px solid rgba(35,35,31,0.55);
-  padding: 10px 16px 14px;
-  box-sizing: border-box;
-  display: flex;
-  flex-direction: column;
-  gap: 2px;
-  z-index: 5;
-  overflow: hidden;
-}
-
-.recipe-card__notes-title {
-  font-family: 'La Belle Aurore', cursive;
-  font-size: 34px;
-  line-height: 1;
-  padding-left: 2px;
-}
-
-.recipe-card__notes-text {
-  flex: 1;
-  min-height: 0;
-  font-family: 'La Belle Aurore', cursive;
-  line-height: 1.5;
-  font-size: 15px;
-  color: var(--rc-ink);
-  white-space: pre-wrap;
-  overflow: hidden;
-}
-
-/* ---------- правая колонка: заголовок / мета / фото / шаги ---------- */
-
-.recipe-card__right {
-  display: flex;
-  flex-direction: column;
-  min-height: 0;
-  position: relative;
-}
-
-.recipe-card__header {
-  height: 66px;
-  flex: none;
-  border-bottom: 1px solid var(--rc-ink);
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  padding: 0 16px;
-}
-
-.recipe-card__title {
-  flex: 1;
-  min-width: 0;
-  text-align: center;
-  font-family: 'Jost', sans-serif;
-  font-weight: 700;
-  font-size: 27px;
-  color: var(--rc-ink);
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-}
-
-.recipe-card__fav {
-  font-size: 20px;
-  line-height: 1;
-  width: 22px;
-  text-align: right;
-}
-
-.recipe-card__meta {
-  height: 88px;
-  flex: none;
-  border-bottom: 1px solid var(--rc-ink);
-  display: grid;
-  grid-template-columns: repeat(4, 1fr);
-}
-
-.recipe-card__meta-cell {
-  border-right: 1px solid var(--rc-ink);
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  gap: 5px;
-  padding: 6px;
-}
-
-.recipe-card__meta-cell:last-child { border-right: 0; }
-
-.recipe-card__meta-emoji { font-size: 26px; line-height: 1; }
-
-.recipe-card__meta-value { font-size: 19px; color: var(--rc-ink); }
-
-.recipe-card__meta-label {
-  font-size: 10px;
-  letter-spacing: 0.14em;
-  text-transform: uppercase;
-  color: rgba(35,35,31,0.55);
-}
-
-.recipe-card__meta-category {
-  font-size: 12px;
-  letter-spacing: 0.06em;
-  text-transform: uppercase;
-  color: var(--rc-ink);
-  text-align: center;
-}
-
-.recipe-card__meta-spice { font-size: 17px; line-height: 1; letter-spacing: 1px; min-height: 19px; }
-
-.recipe-card__body {
-  flex: 1;
-  min-height: 0;
-  position: relative;
-  display: flex;
-  flex-direction: column;
-}
-
-.recipe-card__photo {
-  position: absolute;
-  top: 14px;
-  left: 8px;
-  width: 404px;
-  transform: rotate(-9deg);
-  background: #fff;
-  padding: 15px;
-  box-shadow: 6px 7px 14px rgba(35,35,31,0.22);
-  z-index: 4;
-}
-
-.recipe-card__photo img,
-.recipe-card__photo .recipe-card__photo-placeholder {
-  display: block;
-  width: 403px;
-  height: 252px;
-  object-fit: cover;
-  background: repeating-linear-gradient(45deg, #f4f1e2, #f4f1e2 10px, #efe9d2 10px, #efe9d2 20px);
-}
-
-.recipe-card__photo-placeholder {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 13px;
-  color: rgba(35,35,31,0.4);
-  text-align: center;
-}
-
-.recipe-card__steps {
-  margin-top: 298px;
-  flex: 1;
-  min-height: 0;
-  background: var(--rc-step-bg);
-  padding: 16px 20px 18px;
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-  width: 433px;
-  height: 510px;
-  box-sizing: border-box;
-  overflow: hidden;
-}
-
-.recipe-card__steps-title {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  margin-top: 46px;
-  width: 433px;
-}
-
-.recipe-card__steps-title span {
-  font-family: 'Jost', sans-serif;
-  font-weight: 700;
-  font-size: 17px;
-  letter-spacing: 0.14em;
-  text-transform: uppercase;
-  white-space: nowrap;
-  padding-left: 4px;
-}
-
-.recipe-card__steps-title::after {
-  content: '';
-  flex: 1;
-  height: 1px;
-  background: var(--rc-ink);
-  opacity: 0.5;
-}
-
-.recipe-card__steps-text {
-  flex: 1;
-  min-height: 0;
-  box-sizing: border-box;
-  width: 438px;
-  line-height: 1.7;
-  font-size: 16px;
-  color: var(--rc-ink);
-  padding: 0 4px;
-  white-space: pre-wrap;
-  overflow: hidden;
-}
-
-/* ---------- нижний колонтитул ---------- */
-
-.recipe-card__footer-source {
-  border-top: 1px solid var(--rc-ink);
-  border-right: 1px solid var(--rc-ink);
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  padding: 0 14px;
-}
-
-.recipe-card__footer-source-label {
-  font-family: Aptos, 'Segoe UI', system-ui, sans-serif;
-  font-size: 9px;
-  letter-spacing: 0.14em;
-  text-transform: uppercase;
-  color: rgba(35,35,31,0.5);
-  white-space: nowrap;
-}
-
-.recipe-card__footer-source a {
-  font-family: Aptos, 'Segoe UI', system-ui, sans-serif;
-  font-size: 13px;
-  color: #6d5a2a;
-  text-decoration: none;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-}
-
-.recipe-card__footer-source a:hover { color: #3f3418; }
-
-.recipe-card__footer-bon {
-  border-top: 1px solid var(--rc-ink);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.recipe-card__footer-bon span {
-  font-family: 'Jost', sans-serif;
-  font-weight: 700;
-  font-size: 22px;
-}
-
-/* ---------- адаптив: вписываем страницу A4 в контейнер уже экрана ---------- */
-
-.recipe-card-scale {
-  width: 100%;
-  overflow-x: auto;
-  display: flex;
-  justify-content: center;
-}
-
-@media (max-width: 850px) {
-  .recipe-card-scale .recipe-card {
-    transform: scale(calc((100vw - 32px) / 794));
-    transform-origin: top center;
-    margin-bottom: calc((1123px - (100vw - 32px) * 1123 / 794) * -1);
-  }
+/** Строит DOM-узел карточки рецепта. */
+function renderRecipeCard(recipe) {
+  const wrap = document.createElement('div');
+  wrap.innerHTML = recipeCardHTML(recipe);
+  return wrap.firstElementChild;
 }
