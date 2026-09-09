@@ -245,10 +245,17 @@ async function handleDownloadPdf() {
   els.pdfBtn.textContent = '…';
   els.pdfBtn.disabled = true;
 
+  // Важно: контейнер для экспорта должен реально лежать на экране (в
+  // положительных координатах 0,0), иначе html2canvas у некоторых версий
+  // обрезает его при клонировании страницы и отдаёт пустой холст.
+  // Поэтому прячем его не сдвигом в минус, а полноэкранной "шторкой" поверх.
+  const overlay = document.createElement('div');
+  overlay.className = 'pdf-export-overlay';
+  overlay.textContent = 'Собираю PDF, подождите…';
+  document.body.appendChild(overlay);
+
   const root = document.createElement('div');
-  root.style.position = 'fixed';
-  root.style.left = '-99999px';
-  root.style.top = '0';
+  root.className = 'pdf-export-root';
   pages.forEach((page) => {
     const node = pageNode(page);
     node.style.pageBreakAfter = 'always';
@@ -263,8 +270,8 @@ async function handleDownloadPdf() {
         margin: 0,
         filename: 'kniga-receptov-yashcheritsy.pdf',
         image: { type: 'jpeg', quality: 0.95 },
-        html2canvas: { scale: 2, useCORS: true, windowWidth: 794 },
-        jsPDF: { unit: 'px', format: [794, 1123], orientation: 'portrait' },
+        html2canvas: { scale: 2, useCORS: true },
+        jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' },
         pagebreak: { mode: ['css', 'legacy'] },
       })
       .from(root)
@@ -274,6 +281,7 @@ async function handleDownloadPdf() {
     window.alert('Не удалось собрать PDF. Попробуйте ещё раз.');
   } finally {
     document.body.removeChild(root);
+    document.body.removeChild(overlay);
     pdfBusy = false;
     els.pdfBtn.textContent = originalLabel;
     els.pdfBtn.disabled = false;
