@@ -289,6 +289,29 @@ body.page-book .book-layout {
   font-style: italic;
 }
 
+/* --- служебные элементы для генерации PDF (js/book.js) --- */
+
+.pdf-export-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 100000;
+  background: var(--paper);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: 'Jost', sans-serif;
+  font-size: 15px;
+  color: var(--ink);
+}
+
+.pdf-export-root {
+  position: fixed;
+  top: 0;
+  left: 0;
+  z-index: 99999;
+  background: #fff;
+}
+
 /* -------------------------------- /index (главная) --------------------------------- */
 
 .home {
