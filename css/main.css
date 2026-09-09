@@ -250,10 +250,9 @@ body.page-book .book-layout {
   width: 794px;
   height: 1123px;
   border: 1px solid var(--ink);
-  background: var(--rc-bg, var(--paper));
-  background-image:
-    repeating-linear-gradient(to right, rgba(35,35,31,0.09) 0 1px, transparent 1px 24px),
-    repeating-linear-gradient(to bottom, rgba(35,35,31,0.09) 0 1px, transparent 1px 24px);
+  background-color: var(--rc-bg, var(--paper));
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24'%3E%3Cpath d='M0.5 0V24M0 0.5H24' stroke='%232C2A24' stroke-opacity='0.09' stroke-width='1'/%3E%3C/svg%3E");
+  background-size: 24px 24px;
   display: flex;
   flex-direction: column;
   align-items: center;
