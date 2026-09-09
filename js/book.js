@@ -238,6 +238,30 @@ window.addEventListener('resize', () => {
 
 /* -------------------------------- скачивание PDF -------------------------------- */
 
+/**
+ * Внешние фото (Pinterest и т.п.) обычно не отдают CORS-заголовки, поэтому
+ * html2canvas не может включить их в холст напрямую. Прогоняем такие ссылки
+ * через публичный прокси-сервис изображений, который отдаёт их уже с
+ * разрешающими CORS-заголовками. Используется только при экспорте в PDF —
+ * на обычном просмотре книги фото показываются по прямой ссылке.
+ */
+function corsProxied(url) {
+  if (!/^https?:\/\//i.test(url)) return url;
+  return `https://images.weserv.nl/?url=${encodeURIComponent(url)}`;
+}
+
+/** Ждёт загрузки всех <img> внутри узла (успешной или с ошибкой). */
+function waitForImages(node) {
+  const imgs = Array.from(node.querySelectorAll('img'));
+  return Promise.all(imgs.map((img) => {
+    if (img.complete && img.naturalWidth > 0) return Promise.resolve();
+    return new Promise((resolve) => {
+      img.addEventListener('load', resolve, { once: true });
+      img.addEventListener('error', resolve, { once: true });
+    });
+  }));
+}
+
 async function handleDownloadPdf() {
   if (pdfBusy || !pages.length) return;
 
@@ -273,9 +297,21 @@ async function handleDownloadPdf() {
 
       stage.innerHTML = '';
       const node = pageNode(pages[i]);
+
+      // подменяем ссылки на фото на CORS-safe прокси перед показом на странице
+      node.querySelectorAll('img').forEach((img) => {
+        const original = img.getAttribute('src');
+        if (original) {
+          img.crossOrigin = 'anonymous';
+          img.src = corsProxied(original);
+        }
+      });
+
       stage.appendChild(node);
 
-      // дать браузеру реально отрисовать страницу (важно для внешних фото)
+      // ждём реальной загрузки фото + один кадр на отрисовку остального
+      // eslint-disable-next-line no-await-in-loop
+      await waitForImages(node);
       // eslint-disable-next-line no-await-in-loop
       await new Promise((resolve) => requestAnimationFrame(() => requestAnimationFrame(resolve)));
 
