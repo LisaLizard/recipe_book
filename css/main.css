@@ -273,19 +273,17 @@ body.page-book .book-layout {
   letter-spacing: 0.06em;
 }
 
-.cover-emoji { font-size: 120px; line-height: 1; }
-
-.cover-title {
-  font-family: 'Playfair Display', serif;
-  font-weight: 700;
-  font-size: 44px;
-  line-height: 1.25;
+.book-sheet--cover {
+  padding: 0;
+  gap: 0;
+  overflow: hidden;
 }
 
-.cover-hint {
-  font-size: 14px;
-  color: rgba(44,42,36,0.45);
-  font-style: italic;
+.cover-image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
 }
 
 /* --- служебные элементы для генерации PDF (js/book.js) --- */
