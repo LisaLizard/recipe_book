@@ -106,6 +106,7 @@ async function generateEpub() {
     const spineItems = [];
     const navPoints = [];
     let imgCounter = 0;
+    let coverImgId = null;
     const totalDigits = String(pages.length).length;
 
     for (let i = 0; i < pages.length; i += 1) {
@@ -121,6 +122,17 @@ async function generateEpub() {
       if (page.type === 'cover') {
         title = 'Обложка';
         bodyHtml = renderCoverHTML();
+        try {
+          // eslint-disable-next-line no-await-in-loop
+          const { bytes, ext, mime } = await epubFetchImage('photos/book_cover.jpg');
+          const imgName = `cover.${ext}`;
+          oebps.folder('images').file(imgName, bytes);
+          manifestItems.push(`<item id="cover-img" href="images/${imgName}" media-type="${mime}" properties="cover-image"/>`);
+          bodyHtml = bodyHtml.replace('photos/book_cover.jpg', `../images/${imgName}`);
+          coverImgId = 'cover-img';
+        } catch (err) {
+          console.warn('EPUB: не удалось встроить обложку', err);
+        }
       } else if (page.type === 'divider') {
         title = CATEGORY_LABELS[page.category] || page.category;
         bodyHtml = renderDividerHTML(page.category);
@@ -190,6 +202,7 @@ async function generateEpub() {
     <meta property="rendition:layout">pre-paginated</meta>
     <meta property="rendition:orientation">portrait</meta>
     <meta property="rendition:spread">none</meta>
+    ${coverImgId ? `<meta name="cover" content="${coverImgId}"/>` : ''}
   </metadata>
   <manifest>
     <item id="nav" href="nav.xhtml" media-type="application/xhtml+xml" properties="nav"/>
