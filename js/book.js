@@ -82,9 +82,7 @@ function findRecipeIndex(id) {
 function renderCoverHTML() {
   return `
     <div class="book-sheet book-sheet--cover">
-      <div class="cover-emoji">🦎</div>
-      <div class="cover-title">Книга рецептов<br>ящерицы</div>
-      <div class="cover-hint">обложка — заглушка, дизайн будет позже</div>
+      <img class="cover-image" src="photos/book_cover.jpg" alt="Книга рецептов ящерицы">
     </div>`;
 }
 
